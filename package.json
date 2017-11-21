@@ -1,0 +1,40 @@
+{
+  "name": "aliyun-iot-mqtt",
+  "version": "0.0.1",
+  "description": "阿里云IoT物联网套件客户端",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc mocha",
+    "coverage": "nyc report --reporter=html",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xihu-fm/aliyun-iot-client-sdk.git"
+  },
+  "keywords": [
+    "aliyun",
+    "IoT",
+    "aliyun-iot-mqtt",
+    "iot-hub"
+  ],
+  "author": "wongxming",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xihu-fm/aliyun-iot-client-sdk/issues"
+  },
+  "engines": {
+    "node": ">= 7.6"
+  },
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "mqtt": "^2.14.0",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^4.0.1",
+    "nyc": "^11.3.0",
+    "coveralls": "^3.0.0",
+    "chai": "^4.1.2"
+  }
+}
