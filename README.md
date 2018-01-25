@@ -30,7 +30,10 @@ const Mqtt = require('aliyun-iot-mqtt');
 const client = Mqtt.getAliyunIotMqttClient({
     productKey: "",
     deviceName: "",
-    deviceSecret: ""
+    deviceSecret: "",
+    regionId: "cn-shanghai",
+
+    keepalive:120 // mqtt options
 });
 
 
@@ -41,6 +44,25 @@ client.on('connect', function() {
 client.end(function (){
     console.log("end")
 })
+
+```
+
+### TLS mqtts
+[aliyun_iot_root.cer](http://aliyun-iot.oss-cn-hangzhou.aliyuncs.com/cert_pub/root.crt)
+
+```js
+var trustedCA = fs.readFileSync(path.join(__dirname, '/aliyun_iot_root.cer'))
+
+var options = {
+    productKey: "",
+    deviceName: "",
+    deviceSecret: "",
+    regionId: "cn-shanghai",
+    protocol: 'mqtts',
+    ca: trustedCA,
+
+    keepalive:120 // mqtt options
+};
 
 ```
 
