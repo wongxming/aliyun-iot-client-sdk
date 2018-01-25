@@ -2,25 +2,37 @@
 
 const crypto = require('./lib/hex_hmac_sha1');
 const mqtt = require('mqtt');
-const uuid = require('uuid');
 /**
 * options 
         productKey
         deviceName
         deviceSecret
 */
-exports.getAliyunIotMqttClient = function(options) {
+exports.getAliyunIotMqttClient = function(opts) {
 
-    if (!options || !options.productKey ||
-        !options.deviceName || !options.deviceSecret) {
+    if (!opts || !opts.productKey ||
+        !opts.deviceName || !opts.deviceSecret) {
         throw new Error('options need productKey,deviceName,deviceSecret');
     }
 
-    const deviceSecret = options.deviceSecret;
-    delete options.deviceSecret;
-    options.timestamp = Date.now();
-    options.clientId = uuid.v4();
+    if (opts.protocol === 'mqtts' && !opts.ca) {
+        throw new Error('mqtts need ca ');
+    }
+    if (!opts.host && !opts.regionId) {
+        throw new Error('options need host or regionId (aliyun regionId)');
+    }
 
+    const deviceSecret = opts.deviceSecret;
+    delete opts.deviceSecret;
+
+    let secureMode = (opts.protocol === 'mqtts') ? 2 : 3;
+
+    var options = {
+        productKey: opts.productKey,
+        deviceName: opts.deviceName,
+        timestamp: Date.now(),
+        clientId: Math.random().toString(36).substr(2)
+    }
     let keys = Object.keys(options).sort();
     // 按字典序排序
     keys = keys.sort();
@@ -30,18 +42,13 @@ exports.getAliyunIotMqttClient = function(options) {
     });
     const contentStr = list.join('');
 
-    const password = crypto.hex_hmac_sha1(deviceSecret, contentStr);
+    opts.password = crypto.hex_hmac_sha1(deviceSecret, contentStr);
+    opts.clientId = `${options.clientId}|securemode=${secureMode},signmethod=hmacsha1,timestamp=${options.timestamp}|`;
+    opts.username = `${options.deviceName}&${options.productKey}`;
 
+    opts.port = opts.port || 1883;
+    opts.host = opts.host || `${opts.productKey}.iot-as-mqtt.${opts.regionId}.aliyuncs.com`;
+    opts.protocol = opts.protocol || 'mqtt';
 
-    const mqttClientId = `${options.clientId}|securemode=3,signmethod=hmacsha1,timestamp=${options.timestamp}|`;
-
-    //华东2节点域名是：${productKey}.iot-as-mqtt.cn-shanghai.aliyuncs.com:1883
-    var url = `tcp://${options.productKey}.iot-as-mqtt.cn-shanghai.aliyuncs.com:1883`;
-    var opts = {
-        clientId: mqttClientId,
-        username: `${options.deviceName}&${options.productKey}`,
-        password: password
-    };
-
-    return mqtt.connect(url, opts);
+    return mqtt.connect(opts);
 }
