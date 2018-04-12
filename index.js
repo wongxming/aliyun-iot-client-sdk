@@ -1,6 +1,6 @@
 'use strict';
 
-const crypto = require('./lib/hex_hmac_sha1');
+const crypto = require('crypto');
 const mqtt = require('mqtt');
 /**
 * options 
@@ -42,7 +42,7 @@ exports.getAliyunIotMqttClient = function(opts) {
     });
     const contentStr = list.join('');
 
-    opts.password = crypto.hex_hmac_sha1(deviceSecret, contentStr);
+    opts.password = crypto.createHmac('sha1', deviceSecret).update(contentStr).digest('hex');
     opts.clientId = `${options.clientId}|securemode=${secureMode},signmethod=hmacsha1,timestamp=${options.timestamp}|`;
     opts.username = `${options.deviceName}&${options.productKey}`;
 
