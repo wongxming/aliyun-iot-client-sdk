@@ -88,7 +88,3 @@ client.on('message', function(topic, message) {
 })
 
 ```
-
-### Bugs
-
-<img src='https://raw.githubusercontent.com/wongxming/dtalkNodejs/master/wongxming.jpg' width="240" height="240" />
